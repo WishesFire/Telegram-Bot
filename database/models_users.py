@@ -19,7 +19,3 @@ class DataBase_users:
     def connect_close(self):
         self.root_connect.close()
 
-
-c = DataBase_users()
-c.create_db()
-c.connect_close()

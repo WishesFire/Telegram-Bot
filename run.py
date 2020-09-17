@@ -5,13 +5,10 @@ from handler.commands import start, get_info, keyboard_callback_handler
 from config import TG_TOKEN, TG_API_URL
 import logging
 
-logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-                     level=logging.INFO)
-swapped = True
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 
 def bot_run():
     updater = Updater(token=TG_TOKEN, base_url=TG_API_URL, use_context=True)
-    global swapped
 
     dispatcher = updater.dispatcher
 

@@ -4,8 +4,8 @@ import os
 class DataBase_words:
     def __init__(self):
         # info database
-        self.root_connect = psycopg2.connect(database='*', user='*',
-                                        password='*', host='*', port='*')
+        self.root_connect = psycopg2.connect(database='postgres', user='',
+                                        password='*', host='127.0.0.1', port='5432')
         self.curs = self.root_connect.cursor()
         print("Database opened successfully")
 

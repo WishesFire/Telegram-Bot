@@ -2,7 +2,7 @@ import psycopg2
 
 class DataBase_users:
     def __init__(self):
-        self.root_connect = psycopg2.connect(database='postgres', user='', password='',
+        self.root_connect = psycopg2.connect(database='postgres', user='postgres', password='rashpil07',
                                              host='127.0.0.1', port='5432')
         self.curs = self.root_connect.cursor()
         print('Database opened successfully')
@@ -24,9 +24,14 @@ class DataBase_users:
         return self.curs.fetchone()[0]
 
     def delete_user(self):
-        self.curs.execute("DELETE from users where user_id=576178407")
+        self.curs.execute("DELETE from users")
         self.root_connect.commit()
 
     def connect_close(self):
         self.root_connect.close()
         print('Database close')
+
+
+#c = DataBase_users()
+#c.delete_user()
+#c.connect_close()

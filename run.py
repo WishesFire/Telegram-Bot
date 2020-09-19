@@ -20,7 +20,7 @@ def bot_run():
                 MessageHandler(Filters.text, get_info, pass_user_data=True),
             ],
             COUNT_WORDS: [
-                CallbackQueryHandler(keyboard_callback_handler, pass_user_data=True)
+                CallbackQueryHandler(keyboard_callback_handler, pass_user_data=True, pass_job_queue=True)
             ]
         },
         fallbacks=[]

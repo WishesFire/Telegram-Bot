@@ -5,10 +5,12 @@ from logger import logger_check_func
 from keyboards.inline import get_base_inline_keyboard
 from keyboards.inline import five_inline_keyboard, ten_inline_keyboard, fifteen_inline_keyboard
 from database.models_users import DataBase_users
-
+from database.models_words import DataBase_words
+import time
 
 TIME, COUNT_WORDS = 1, 2
 base = DataBase_users()
+wordest = DataBase_words()
 
 @logger_check_func
 def start(update: Update, context: CallbackContext):
@@ -85,5 +87,24 @@ def keyboard_callback_handler(update: Update, context: CallbackContext):
 
     base.push_date(update.callback_query.message.chat.id, context.user_data[TIME], context.user_data[COUNT_WORDS])
     context.user_data.clear()
+    context.job_queue.run_repeating(jobolin, interval=30, context=update.callback_query.message.chat.id)
 
     return ConversationHandler.END
+
+def jobolin(context: CallbackContext):
+    print(context.job.context)  # Id
+    time_now = time.localtime()[3:5]  # Зараз час
+    lst_all_time = base.user_for_time(context.job.context)[0]  # Година чела
+
+    print(time_now)
+    print(lst_all_time)
+
+    if len(str(time_now[1])) != 2:  # Проверка на 0
+        time_now = f"{time_now[0]}:0{time_now[1]}"
+    else:
+        time_now = f"{time_now[0]}:{time_now[1]}"
+
+    if time_now == lst_all_time:
+        five_randon = wordest.request_random_word()
+        for i in five_randon:
+            context.bot.send_message(chat_id=context.job.context, text=f'English word Russion Translate\n {i[0]}-{i[1]}')

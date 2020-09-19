@@ -2,7 +2,7 @@ import psycopg2
 
 class DataBase_users:
     def __init__(self):
-        self.root_connect = psycopg2.connect(database='postgres', user='postgres', password='rashpil07',
+        self.root_connect = psycopg2.connect(database='postgres', user='*', password='*',
                                              host='127.0.0.1', port='5432')
         self.curs = self.root_connect.cursor()
         print('Database opened successfully')
@@ -22,6 +22,11 @@ class DataBase_users:
     def user_check(self, tg_ids):
         self.curs.execute(f"SELECT exists (SELECT 1 FROM users WHERE user_id = {tg_ids})")
         return self.curs.fetchone()[0]
+
+    def user_for_time(self, user):
+        self.curs.execute(f"SELECT words_time from users where user_id = {user}")
+        rows = self.curs.fetchone()
+        return rows
 
     def delete_user(self):
         self.curs.execute("DELETE from users")

@@ -22,8 +22,8 @@ class DataBase_words:
         print('Pushed data successfully')
         self.root_connect.commit()
 
-    def request_random_word(self):
-        random_id = tuple(random.randint(1, 51380) for i in range(5))
+    def request_random_word(self, counts):
+        random_id = tuple(random.randint(1, 51380) for i in range(counts))
         self.curs.execute(f"SELECT eng_word, rus_word from english_words_date where id in {random_id}")
         row = self.curs.fetchall()
         return row
@@ -34,8 +34,3 @@ class DataBase_words:
 
     def connect_close(self):
         self.root_connect.close()
-
-
-#c = DataBase_words()
-#c.request_random_word()
-#c.connect_close()

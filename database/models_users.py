@@ -24,11 +24,15 @@ class DataBase_users:
         return self.curs.fetchone()[0]
 
     def user_for_time(self, user):
-        self.curs.execute(f"SELECT words_time from users where user_id = {user}")
+        self.curs.execute(f"SELECT words_time, count_word from users where user_id = {user}")
         rows = self.curs.fetchone()
         return rows
 
-    def delete_user(self):
+    def delete_user(self, tg_id):
+        self.curs.execute(f"DELETE from users where user_id= {tg_id}")
+        self.root_connect.commit()
+
+    def delete_all_user(self):
         self.curs.execute("DELETE from users")
         self.root_connect.commit()
 
@@ -38,5 +42,5 @@ class DataBase_users:
 
 
 #c = DataBase_users()
-#c.delete_user()
+#c.delete_all_user()
 #c.connect_close()

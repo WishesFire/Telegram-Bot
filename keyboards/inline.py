@@ -1,6 +1,7 @@
 from telegram import InlineKeyboardMarkup
 from telegram import InlineKeyboardButton
-
+from telegram import KeyboardButton
+from telegram import ReplyKeyboardMarkup
 
 def get_base_inline_keyboard():
     """
@@ -24,3 +25,14 @@ def ten_inline_keyboard():
 
 def fifteen_inline_keyboard():
     return InlineKeyboardMarkup([[InlineKeyboardButton('15 Words🤖', callback_data='callback_fifteen__words')]])
+
+def get_base_reply_keyboard():
+    keyboard = [
+        [
+            KeyboardButton("Unsubscribed or Settings")
+        ],
+    ]
+    return ReplyKeyboardMarkup(
+        keyboard=keyboard,
+        resize_keyboard=True
+    )

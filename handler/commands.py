@@ -37,6 +37,7 @@ def get_info(update: Update, context: CallbackContext):
     """
     text = update.message.text
     check = base.user_check(update.message.chat_id)
+
     if not check:
         if len(str(text)) != 5 or text[2] != ':' or (int(text[:2]) > 23 or int(text[:2]) < 0)\
                                                         or (int(text[3:]) > 59 or int(text[3:]) < 0):
@@ -52,13 +53,28 @@ def get_info(update: Update, context: CallbackContext):
 
             return COUNT_WORDS
 
-    elif text == 'Unsubscribed or Settings':
-        base.delete_user(update.message.chat_id)
+    elif check and base.get_using_set(update.message.chat_id) == 0:
+        if len(str(text)) != 5 or text[2] != ':' or (int(text[:2]) > 23 or int(text[:2]) < 0)\
+                                                        or (int(text[3:]) > 59 or int(text[3:]) < 0):
+            context.bot.send_message(chat_id=update.message.chat_id, text="😡Wrong, please write correctly time😡")
+
+        else:
+            base.change_data(update.message.chat_id, text)
+            context.bot.send_message(chat_id=update.message.chat_id, text="Thank you!!!👍")
+            context.bot.send_message(chat_id=update.message.chat_id,
+                                     text="<b>Choose how many words will be sent to you🎓</b>",
+                                     parse_mode=ParseMode.HTML,
+                                     reply_markup=get_base_inline_keyboard())
+
+            return COUNT_WORDS
+
+
+    elif text == 'Write /start and after click button' and check:
+        base.change_using_set(update.message.chat_id, 0)
         context.bot.send_message(chat_id=update.message.chat_id,
-                                 text="<b>You have unsubscribed if you want to change something, write"
-                                      " time and count words</b>",
+                                 text="You chose settings, please write your new time and number of words",
                                  parse_mode=ParseMode.HTML)
-        return ConversationHandler.END
+        return TIME
 
     else:
         context.bot.send_message(chat_id=update.message.chat_id, text="<i>You are already in the system😃</i>",
@@ -69,43 +85,80 @@ def keyboard_callback_handler(update: Update, context: CallbackContext):
     """
     Words request handler
     """
-    query = update.callback_query
-    callback_data = query.data
+    check = base.user_check(update.callback_query.message.chat.id)
+    if not check:
+        query = update.callback_query
+        callback_data = query.data
 
-    if callback_data == 'callback_five_words':
-        query.edit_message_text(
-            text=f"Cool...👌\n"
-                 f"5 words will come in",
-            reply_markup=five_inline_keyboard(),
-        )
-        context.user_data[COUNT_WORDS] = 5
-
-
-    elif callback_data == 'callback_ten_words':
-        query.edit_message_text(
-            text=f"Cool...👌\n"
-                 f"10 words will come in",
-            reply_markup=ten_inline_keyboard(),
-        )
-        context.user_data[COUNT_WORDS] = 10
+        if callback_data == 'callback_five_words':
+            query.edit_message_text(
+                text=f"Cool...👌\n"
+                     f"5 words will come you",
+                reply_markup=five_inline_keyboard(),
+            )
+            context.user_data[COUNT_WORDS] = 5
 
 
-    elif callback_data == 'callback_fifteen_words':
-        query.edit_message_text(
-            text=f"Cool...👌\n"
-                 f"15 words will come in",
-            reply_markup=fifteen_inline_keyboard(),
-        )
-        context.user_data[COUNT_WORDS] = 15
+        elif callback_data == 'callback_ten_words':
+            query.edit_message_text(
+                text=f"Cool...👌\n"
+                     f"10 words will come you",
+                reply_markup=ten_inline_keyboard(),
+            )
+            context.user_data[COUNT_WORDS] = 10
 
-    base.push_date(update.callback_query.message.chat.id, context.user_data[TIME], context.user_data[COUNT_WORDS])
-    context.user_data.clear()
-    context.job_queue.run_repeating(jobolin, interval=60, context=update.callback_query.message.chat.id)
 
-    return ConversationHandler.END
+        elif callback_data == 'callback_fifteen_words':
+            query.edit_message_text(
+                text=f"Cool...👌\n"
+                     f"15 words will come you",
+                reply_markup=fifteen_inline_keyboard(),
+            )
+            context.user_data[COUNT_WORDS] = 15
+
+        base.push_date(update.callback_query.message.chat.id, context.user_data[TIME], context.user_data[COUNT_WORDS])
+        context.user_data.clear()
+        context.job_queue.run_repeating(jobolin, interval=60, context=update.callback_query.message.chat.id)
+
+        return ConversationHandler.END
+
+    elif base.get_using_set(update.callback_query.message.chat.id) == 0:
+        query = update.callback_query
+        callback_data = query.data
+
+        if callback_data == 'callback_five_words':
+            query.edit_message_text(
+                text=f"Cool...👌\n"
+                     f"5 words will come you",
+                reply_markup=five_inline_keyboard(),
+            )
+            base.change_count(update.callback_query.message.chat.id, 5)
+
+
+        elif callback_data == 'callback_ten_words':
+            query.edit_message_text(
+                text=f"Cool...👌\n"
+                     f"10 words will come you",
+                reply_markup=ten_inline_keyboard(),
+            )
+            base.change_count(update.callback_query.message.chat.id, 10)
+
+
+        elif callback_data == 'callback_fifteen_words':
+            query.edit_message_text(
+                text=f"Cool...👌\n"
+                     f"15 words will come you",
+                reply_markup=fifteen_inline_keyboard(),
+            )
+            base.change_count(update.callback_query.message.chat.id, 15)
+
+        context.user_data.clear()
+        base.change_using_set(update.callback_query.message.chat.id, 1)
+        return ConversationHandler.END
 
 def jobolin(context: CallbackContext):
-    time_now = time.localtime()[3:5]  # Зараз час
+    print(context.job.context)
+    time_now = time.localtime()[3:5]
     lst_all_time = base.user_for_time(context.job.context) # ПРОВЕРКА!!!
 
     if len(str(time_now[1])) != 2:  # Проверка на 0

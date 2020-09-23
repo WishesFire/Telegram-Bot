@@ -23,6 +23,27 @@ class DataBase_users:
         self.curs.execute(f"SELECT exists (SELECT 1 FROM users WHERE user_id = {tg_ids})")
         return self.curs.fetchone()[0]
 
+    def get_using_set(self, tg_ids):
+        self.curs.execute(f'SELECT using_set FROM users WHERE user_id = {tg_ids}')
+        return self.curs.fetchone()[0]
+
+    def change_using_set(self, tg_ids, num):
+        self.curs.execute(f'UPDATE users set using_set = {num} where user_id = {tg_ids}')
+        self.root_connect.commit()
+
+    def change_data(self, tg_ids, text):
+        self.curs.execute(f"UPDATE users set words_time = '{text}' where user_id = {tg_ids}")
+        self.root_connect.commit()
+
+    def change_count(self, tg_ids, count):
+        self.curs.execute(f"UPDATE users set count_word = {count} where user_id = {tg_ids}")
+        self.root_connect.commit()
+
+    def get_all_users(self):
+        self.curs.execute('SELECT user_id FROM users')
+        row = self.curs.fetchall()
+        return row
+
     def user_for_time(self, user):
         self.curs.execute(f"SELECT words_time, count_word from users where user_id = {user}")
         rows = self.curs.fetchone()
@@ -40,6 +61,10 @@ class DataBase_users:
         self.root_connect.close()
         print('Database close')
 
+
+#c = DataBase_users()
+#print(c.get_using_set())
+#c.connect_close()
 
 #c = DataBase_users()
 #c.delete_all_user()

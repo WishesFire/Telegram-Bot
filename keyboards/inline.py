@@ -1,7 +1,4 @@
-from telegram import InlineKeyboardMarkup
-from telegram import InlineKeyboardButton
-from telegram import KeyboardButton
-from telegram import ReplyKeyboardMarkup
+from telegram import InlineKeyboardMarkup, ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardButton
 
 def get_base_inline_keyboard():
     """
@@ -29,7 +26,7 @@ def fifteen_inline_keyboard():
 def get_base_reply_keyboard():
     keyboard = [
         [
-            KeyboardButton("Unsubscribed or Settings")
+            KeyboardButton("Write /start and after click button")
         ],
     ]
     return ReplyKeyboardMarkup(

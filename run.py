@@ -1,7 +1,7 @@
 from telegram.ext import CommandHandler, MessageHandler, CallbackQueryHandler, ConversationHandler
 from telegram.ext import Updater
 from telegram.ext import Filters
-from handler.commands import start, get_info, keyboard_callback_handler
+from handler.commands import start, get_info, keyboard_callback_handler, get_time
 from config import TG_TOKEN, TG_API_URL
 import logging
 
@@ -28,9 +28,7 @@ def bot_run():
 
     dispatcher = updater.dispatcher
     dispatcher.add_handler(conv_handler)
-
-    # Jobs Check
-    #updater.job_queue.run_repetating(maker, interval='', first=0)
+    dispatcher.add_handler(CommandHandler('time', get_time))
 
     updater.start_polling()
     updater.idle()

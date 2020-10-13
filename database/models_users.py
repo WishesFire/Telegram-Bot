@@ -44,6 +44,11 @@ class DataBase_users:
         row = self.curs.fetchall()
         return row
 
+    def get_user_time(self, user):
+        self.curs.execute(f'SELECT words_time from users where user_id = {user}')
+        rows = self.curs.fetchone()
+        return rows
+
     def user_for_time(self, user):
         self.curs.execute(f"SELECT words_time, count_word from users where user_id = {user}")
         rows = self.curs.fetchone()
@@ -63,9 +68,9 @@ class DataBase_users:
 
 
 #c = DataBase_users()
-#print(c.get_using_set())
+#c.delete_all_user()
 #c.connect_close()
 
 #c = DataBase_users()
-#c.delete_all_user()
+
 #c.connect_close()

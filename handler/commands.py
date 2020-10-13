@@ -7,6 +7,7 @@ from keyboards.inline import five_inline_keyboard, ten_inline_keyboard, fifteen_
 from database.models_users import DataBase_users
 from database.models_words import DataBase_words
 import time
+from datetime import timedelta
 
 TIME, COUNT_WORDS = 1, 2
 base = DataBase_users()
@@ -29,6 +30,34 @@ def start(update: Update, context: CallbackContext):
         context.bot.send_message(chat_id=update.message.chat_id, text="<i>You are already in the system😃</i>",
                                  parse_mode=ParseMode.HTML)
     return TIME
+
+@logger_check_func
+def get_time(update: Update, context: CallbackContext):
+    check = base.user_check(update.message.chat_id)
+    time_now = current_time()
+
+    if not check:
+        context.bot.send_message(chat_id=update.message.chat_id, text='You are not in the system😃')
+    else:
+        time_user = str(base.get_user_time(update.message.chat_id))[2:7]
+        cur_hour = timedelta(hours=int(time_now[0:2]), minutes=int(time_now[3:]))
+        cur_minutes = timedelta(hours=int(time_user[0:2]), minutes=int(time_user[3:]))
+        final_times = cur_minutes - cur_hour
+        context.bot.send_message(chat_id=update.message.chat_id, text=str(final_times))
+
+
+def current_time():
+    time_now = time.localtime()[3:5]
+
+    if len(str(time_now[1])) != 2:  # Проверка на 0
+        time_now = f"{time_now[0]}:0{time_now[1]}"
+    elif len(str(time_now[0])) != 2:
+        time_now = f"0{time_now[0]}:{time_now[1]}"
+    else:
+        time_now = f"{time_now[0]}:{time_now[1]}"
+
+    return time_now
+
 
 @logger_check_func
 def get_info(update: Update, context: CallbackContext):
@@ -93,7 +122,7 @@ def keyboard_callback_handler(update: Update, context: CallbackContext):
         if callback_data == 'callback_five_words':
             query.edit_message_text(
                 text=f"Cool...👌\n"
-                     f"5 words will come you",
+                     f"5 words will come to you",
                 reply_markup=five_inline_keyboard(),
             )
             context.user_data[COUNT_WORDS] = 5
@@ -102,7 +131,7 @@ def keyboard_callback_handler(update: Update, context: CallbackContext):
         elif callback_data == 'callback_ten_words':
             query.edit_message_text(
                 text=f"Cool...👌\n"
-                     f"10 words will come you",
+                     f"10 words will come to you",
                 reply_markup=ten_inline_keyboard(),
             )
             context.user_data[COUNT_WORDS] = 10
@@ -111,7 +140,7 @@ def keyboard_callback_handler(update: Update, context: CallbackContext):
         elif callback_data == 'callback_fifteen_words':
             query.edit_message_text(
                 text=f"Cool...👌\n"
-                     f"15 words will come you",
+                     f"15 words will come to you",
                 reply_markup=fifteen_inline_keyboard(),
             )
             context.user_data[COUNT_WORDS] = 15
@@ -129,7 +158,7 @@ def keyboard_callback_handler(update: Update, context: CallbackContext):
         if callback_data == 'callback_five_words':
             query.edit_message_text(
                 text=f"Cool...👌\n"
-                     f"5 words will come you",
+                     f"5 words will come to you",
                 reply_markup=five_inline_keyboard(),
             )
             base.change_count(update.callback_query.message.chat.id, 5)
@@ -138,7 +167,7 @@ def keyboard_callback_handler(update: Update, context: CallbackContext):
         elif callback_data == 'callback_ten_words':
             query.edit_message_text(
                 text=f"Cool...👌\n"
-                     f"10 words will come you",
+                     f"10 words will come to you",
                 reply_markup=ten_inline_keyboard(),
             )
             base.change_count(update.callback_query.message.chat.id, 10)
@@ -147,7 +176,7 @@ def keyboard_callback_handler(update: Update, context: CallbackContext):
         elif callback_data == 'callback_fifteen_words':
             query.edit_message_text(
                 text=f"Cool...👌\n"
-                     f"15 words will come you",
+                     f"15 words will come to you",
                 reply_markup=fifteen_inline_keyboard(),
             )
             base.change_count(update.callback_query.message.chat.id, 15)
@@ -157,16 +186,8 @@ def keyboard_callback_handler(update: Update, context: CallbackContext):
         return ConversationHandler.END
 
 def jobolin(context: CallbackContext):
-    print(context.job.context)
-    time_now = time.localtime()[3:5]
     lst_all_time = base.user_for_time(context.job.context) # ПРОВЕРКА!!!
-
-    if len(str(time_now[1])) != 2:  # Проверка на 0
-        time_now = f"{time_now[0]}:0{time_now[1]}"
-    elif len(str(time_now[0])) != 2:
-        time_now = f"0{time_now[0]}:{time_now[1]}"
-    else:
-        time_now = f"{time_now[0]}:{time_now[1]}"
+    time_now = current_time()
 
     if time_now == lst_all_time[0]:
         five_randon = wordest.request_random_word(lst_all_time[1])
